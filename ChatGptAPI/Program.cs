@@ -19,7 +19,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/bot", async (string input, IOpenAIService openAiService) =>
+app.MapGet("/text", async (string input, IOpenAIService openAiService) =>
 {
     var answer = string.Empty;
     var completionResult = openAiService.Completions.CreateCompletionAsStream(new CompletionCreateRequest()
@@ -47,7 +47,7 @@ app.MapGet("/bot", async (string input, IOpenAIService openAiService) =>
 
     return Results.Ok(answer);
 })
-.WithName("GetBot");
+.WithName("GetText");
 
 app.MapGet("/img", async (string input, IOpenAIService openAiService) =>
 {
