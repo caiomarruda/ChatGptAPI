@@ -19,7 +19,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/text", async (string input, IOpenAIService openAiService) =>
+app.MapGet("/chat", async (string input, IOpenAIService openAiService) =>
 {
     var answer = string.Empty;
     var completionResult = openAiService.Completions.CreateCompletionAsStream(new CompletionCreateRequest()
@@ -47,7 +47,7 @@ app.MapGet("/text", async (string input, IOpenAIService openAiService) =>
 
     return Results.Ok(answer);
 })
-.WithName("GetText");
+.WithName("GetChat");
 
 app.MapGet("/img", async (string input, IOpenAIService openAiService) =>
 {
@@ -59,7 +59,6 @@ app.MapGet("/img", async (string input, IOpenAIService openAiService) =>
         Size = StaticValues.ImageStatics.Size.Size1024,
         ResponseFormat = StaticValues.ImageStatics.ResponseFormat.Url
     });
-
 
     if (imageResult.Successful)
     {
