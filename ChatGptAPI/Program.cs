@@ -22,27 +22,27 @@ app.UseHttpsRedirection();
 app.MapGet("/chat", async (string input, IOpenAIService openAiService) =>
 {
     var answer = string.Empty;
-    var completionResult = openAiService.Completions.CreateCompletionAsStream(new CompletionCreateRequest()
-    {
-        Prompt = input,
-        MaxTokens = 4000
-    }, Models.TextDavinciV3);
 
-    await foreach (var completion in completionResult)
+    var completionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
     {
-        if (completion.Successful)
+        Messages = new List<ChatMessage>
+    {
+        ChatMessage.FromUser(input),
+    },
+        Model = Models.ChatGpt3_5Turbo
+    });
+    if (completionResult.Successful)
+    {
+        answer = completionResult.Choices.First().Message.Content;
+    }
+    else
+    {
+        if (completionResult.Error == null)
         {
-            answer += completion.Choices.FirstOrDefault()?.Text;
+            throw new Exception("Unknown Error");
         }
-        else
-        {
-            if (completion.Error == null)
-            {
-                throw new Exception("Unknown Error");
-            }
 
-            throw new InvalidOperationException($"{completion.Error.Code}: {completion.Error.Message}");
-        }
+        throw new InvalidOperationException($"{completionResult.Error.Code}: {completionResult.Error.Message}");
     }
 
     return Results.Ok(answer);
